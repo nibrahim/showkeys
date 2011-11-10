@@ -50,6 +50,7 @@ char *
 create_emacs_keyname(char *keyname, int meta, int ctrl, int shift)
 {
   char *retval;
+  /* TBD: Handle <. > and others like that wehere XLookupString gives the right values */
   asprintf(&retval, "%s%s%s%s", ctrl?"C-":"", meta?"M-":"", shift?"S-":"", keyname);
   return retval;
 }
@@ -77,7 +78,7 @@ poll_inputs(Display *display, Window window)
       case KeyPress:
 	if (! process_modifiers(ks, &meta, &ctrl, &shift, 1)) {
 	  display_string = create_emacs_keyname(ksname, meta, ctrl, shift);
-	  printf("%s", display_string);
+	  printf("%s\n", display_string);
 	  free(display_string);
 	}
 	break;
