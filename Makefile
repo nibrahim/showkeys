@@ -1,8 +1,11 @@
-showkeys: showkeys.c
-	gcc -Wall showkeys.c -o showkeys -lX11
+showkeys: showkeys.c showkeys.h keystack.o
+	gcc -g -Wall showkeys.c keystack.o -o showkeys -lX11
+
+keystack.o: keystack.c keystack.h
+	gcc -c -g keystack.c
 
 clean:
-	rm showkeys
+	rm showkeys keystack.o
 
 check-syntax:
 	gcc -Wall -o nul -S ${CHK_SOURCES}

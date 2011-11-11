@@ -4,6 +4,7 @@
 #include <X11/Xlib.h> 
 #include <X11/Xutil.h>
 #include "showkeys.h"
+#include "keystack.h"
 
 void 
 usage()
@@ -68,6 +69,9 @@ poll_inputs(Display *display, Window window)
   KeySym ks;
   char *ksname;
   char *display_string;
+  KeyStack *keystack;
+  keystack = create_keystack(NKEYS);
+  display_keystack(keystack);
   XSelectInput(display, window, KeyPressMask|KeyReleaseMask);
   while (1) {
     XNextEvent(display, &event);
@@ -78,8 +82,11 @@ poll_inputs(Display *display, Window window)
       case KeyPress:
 	if (! process_modifiers(ks, &meta, &ctrl, &shift, 1)) {
 	  display_string = create_emacs_keyname(ksname, meta, ctrl, shift);
-	  printf("%s\n", display_string);
-	  free(display_string);
+	  
+	  push(keystack, display_string);
+	  display_keystack(keystack);
+	  /* printf("%s\n", display_string); */
+	  /* free(display_string); */
 	}
 	break;
       case KeyRelease:
