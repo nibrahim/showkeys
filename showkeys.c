@@ -3,6 +3,9 @@
 #include <stdlib.h>
 #include <X11/Xlib.h> 
 #include <X11/Xutil.h>
+
+#include <xosd.h>
+
 #include "showkeys.h"
 #include "keystack.h"
 
@@ -56,6 +59,25 @@ create_emacs_keyname(char *keyname, int meta, int ctrl, int shift)
   return retval;
 }
 
+xosd *
+configure_osd(int lines)
+{
+  xosd *osd;
+  osd = xosd_create (NKEYS);
+  xosd_set_font(osd, "-adobe-courier-bold-r-normal--34-240-100-100-m-200-iso8859-1");
+  xosd_set_colour(osd, "LawnGreen");
+  xosd_set_timeout(osd, 3);
+  xosd_set_shadow_offset(osd, 1);
+  return osd;
+}
+
+void
+display_keystrokes(xosd *osd, KeyStack *stack)
+{
+  
+  xosd_display(osd, 0, XOSD_string, "This is an example");
+}
+  
 
 void 
 poll_inputs(Display *display, Window window) 
@@ -70,8 +92,11 @@ poll_inputs(Display *display, Window window)
   char *ksname;
   char *display_string;
   KeyStack *keystack;
+  xosd *osd;
+  osd = configure_osd(NKEYS);
+
   keystack = create_keystack(NKEYS);
-  display_keystack(keystack);
+
   XSelectInput(display, window, KeyPressMask|KeyReleaseMask);
   while (1) {
     XNextEvent(display, &event);
@@ -84,9 +109,7 @@ poll_inputs(Display *display, Window window)
 	  display_string = create_emacs_keyname(ksname, meta, ctrl, shift);
 	  
 	  push(keystack, display_string);
-	  display_keystack(keystack);
-	  /* printf("%s\n", display_string); */
-	  /* free(display_string); */
+	  display_keystrokes(osd, keystack);
 	}
 	break;
       case KeyRelease:

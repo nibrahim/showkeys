@@ -41,7 +41,7 @@ push(KeyStack *stack, char *keyname)
   last_key = last->keyname;
   index = stack->pos + 1;
 
-  if (last_key && ! strcmp (last_key, keyname)) {
+  if (index && ! strcmp (last_key, keyname)) {
     /* If the same as the top of the stack, increment count */
     last->times ++;
   } else {
@@ -61,9 +61,9 @@ void
 display_keystack(KeyStack *stack)
 {
   int i;
-  /* printf("---- Keystack ----\n"); */
+  printf("---- Keystack ----\n");
   for (i = 0; i <= stack->pos; i++) {
     printf("%s %d times\n", stack->keystrokes[i].keyname, stack->keystrokes[i].times);
   }
-  /* printf("---- -------- ----\n"); */
+  printf("---- -------- ----\n\n");
 }
