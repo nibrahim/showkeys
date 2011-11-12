@@ -17,10 +17,15 @@ push_back(KeyStack *stack, int index)
 KeyStack *
 create_keystack(int size) 
 {
+  int i;
   KeyStack *retval = NULL;
   KeyStroke *stack = NULL;
 
   stack = (KeyStroke *)malloc(sizeof(KeyStroke) * size);
+  for (i=0; i<size; i++) {
+    stack[i].keyname = NULL;
+    stack[i].times = 0;
+  }
 
   retval = (KeyStack *)malloc(sizeof(KeyStack));
   retval->size = size;

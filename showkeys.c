@@ -1,6 +1,7 @@
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <X11/Xlib.h> 
 #include <X11/Xutil.h>
 
@@ -65,17 +66,28 @@ configure_osd(int lines)
   xosd *osd;
   osd = xosd_create (NKEYS);
   xosd_set_font(osd, "-adobe-courier-bold-r-normal--34-240-100-100-m-200-iso8859-1");
-  xosd_set_colour(osd, "LawnGreen");
-  xosd_set_timeout(osd, 3);
-  xosd_set_shadow_offset(osd, 1);
+  xosd_set_pos(osd, XOSD_top);
+  xosd_set_align(osd, XOSD_right);
+
+  xosd_set_colour(osd, "green");
+  xosd_set_outline_colour(osd, "black");
+  xosd_set_outline_offset(osd, 2);
+  xosd_set_shadow_colour(osd, "grey");
+  xosd_set_shadow_offset(osd, 3);
+
+  xosd_set_timeout(osd, -1);
   return osd;
 }
 
 void
 display_keystrokes(xosd *osd, KeyStack *stack)
 {
-  
-  xosd_display(osd, 0, XOSD_string, "This is an example");
+  int i;
+  for(i = 0; i < NKEYS; i++) {
+    if (stack->keystrokes[i].keyname) {
+      xosd_display(osd, i, XOSD_printf, "%s %d times", stack->keystrokes[i].keyname, stack->keystrokes[i].times);
+    }
+  }
 }
   
 
