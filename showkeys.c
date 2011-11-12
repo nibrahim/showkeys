@@ -85,7 +85,11 @@ display_keystrokes(xosd *osd, KeyStack *stack)
   int i;
   for(i = 0; i < NKEYS; i++) {
     if (stack->keystrokes[i].keyname) {
-      xosd_display(osd, i, XOSD_printf, "%s %d times", stack->keystrokes[i].keyname, stack->keystrokes[i].times);
+      if (stack->keystrokes[i].times == 1) {
+	xosd_display(osd, i, XOSD_printf, "%s", stack->keystrokes[i].keyname);
+      } else {
+	xosd_display(osd, i, XOSD_printf, "%s %d times", stack->keystrokes[i].keyname, stack->keystrokes[i].times);
+      }
     }
   }
 }
