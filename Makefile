@@ -6,13 +6,13 @@ keystack.o: keystack.c keystack.h
 	gcc -c -g keystack.c
 
 clean:
-	rm showkeys keystack.o trial1 trial2
+	rm showkeys keystack.o record-attempt record-example
 
 check-syntax:
 	gcc -Wall -o nul -S ${CHK_SOURCES}
 
-trial1: record-attempt.c
-	gcc -g -Wall record-attempt.c -L/usr/lib -lXtst -lxosd -lpthread -lXext -lX11 -lXinerama -o trial1
+record-attempt: record-attempt.c
+	gcc -g -Wall record-attempt.c -L/usr/lib -lXtst -lxosd -lpthread -lXext -lX11 -lXinerama -o record-attempt
 
-trial2: record-example.c
-	gcc -g -Wall record-example.c -L/usr/lib -lXtst -lxosd -lpthread -lXext -lX11 -lXinerama -o trial2
+record-example: record-example.c
+	gcc -g -Wall record-example.c -L/usr/lib -lXtst -lxosd -lpthread -lXext -lX11 -lXinerama -o record-example
