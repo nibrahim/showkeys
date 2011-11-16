@@ -8,7 +8,7 @@
 #include <X11/Xutil.h>
 #include <X11/extensions/record.h>
 
-Display *display;
+Display *d0, *d1;
 const char *Yes = "YES";
 const char *No = "NO";
 const char *Unknown = "unknown";
@@ -35,12 +35,12 @@ foo (XPointer priv, XRecordInterceptData *data)
   if (data->category==XRecordFromServer) {
     event=(xEvent *)data->data;
     if (event->u.u.type==KeyPress) {
-      foo = XKeysymToString(XKeycodeToKeysym(display, event->u.u.detail, 0));
-      printf(" It's a keypress %s\n",foo);
+      foo = XKeysymToString(XKeycodeToKeysym(d0, event->u.u.detail, 0));
+      printf(" It's a keypress %s\n", foo);
     }
     if (event->u.u.type==KeyRelease) {
-      foo = XKeysymToString(XKeycodeToKeysym(display, event->u.u.detail, 0));
-      printf(" It's a keyrelease \n");
+      foo = XKeysymToString(XKeycodeToKeysym(d0, event->u.u.detail, 0));
+      printf(" It's a keyrelease %s\n", foo);
     }
   }
 }
@@ -55,9 +55,12 @@ main()
   int x = 50;
 
 	
-  display = XOpenDisplay(NULL);
-  XSynchronize(display, True);
-  if (display == NULL) {
+  d0 = XOpenDisplay(NULL);
+  d1 = XOpenDisplay(NULL);
+
+  XSynchronize(d0, True);
+  /* XSynchronize(display, True); */
+  if (d0 == NULL || d1 == NULL) {
     fprintf(stderr, "Cannot connect to X server");
     exit (-1);
   }
@@ -69,16 +72,23 @@ main()
   range->device_events.first=KeyPress;
   range->device_events.last=KeyRelease;
 
-  xrd = XRecordCreateContext(display, 0, &client, 1, &range, 1);
+  xrd = XRecordCreateContext(d0, 0, &client, 1, &range, 1);
 
   if (! xrd) {
     fprintf(stderr, "Error in creating context");
     exit (-1);
   }
 
-  XRecordEnableContextAsync(display, xrd, foo, (XPointer)&x);
-  sleep(5);
+  XRecordEnableContext(d1, xrd, foo, (XPointer)&x);
 
-  XCloseDisplay(display);
+  XRecordProcessReplies (d1);
+
+
+  XRecordDisableContext (d0, xrd);
+  XRecordFreeContext (d0, xrd);
+
+
+  XCloseDisplay(d0);
+  XCloseDisplay(d1);
   exit(0);
 }
