@@ -4,28 +4,17 @@
 #include <string.h>
 #include <X11/Xlib.h> 
 #include <X11/Xutil.h>
+#include <X11/Xproto.h>
+#include <X11/extensions/record.h>
 
 #include <xosd.h>
 
 #include "showkeys.h"
 #include "keystack.h"
 
-void 
-usage()
-{
-  fprintf(stderr, "usage: showkeys windowid\n");
-  exit(-1);
-}
+Display *d0, *d1;
 
 
-void
-parse_args(int nargs, char **args, Window *window_id) 
-{
-  if (nargs != 2) {
-    usage();
-  }
-  sscanf(args[1], "0x%lx", window_id);
-}
 
 int 
 process_modifiers(KeySym ks, int * meta, int *ctrl, int *shift, int val)
@@ -94,66 +83,82 @@ display_keystrokes(xosd *osd, KeyStack *stack)
   }
 }
   
-
-void 
-poll_inputs(Display *display, Window window) 
+void
+update_key_ring (XPointer priv, XRecordInterceptData *data)
 {
-  XEvent event;
-  XKeyEvent *e;
   int meta = 0;
   int ctrl = 0;
   int shift = 0;
-  char str[256+1];
+  xEvent *event;
   KeySym ks;
-  char *ksname;
   char *display_string;
+  char *ksname;
   KeyStack *keystack;
-  xosd *osd;
-  osd = configure_osd(NKEYS);
-
+  xosd *osd = (xosd *)priv;
   keystack = create_keystack(NKEYS);
-
-  XSelectInput(display, window, KeyPressMask|KeyReleaseMask);
-  while (1) {
-    XNextEvent(display, &event);
-    e = (XKeyEvent *) &event;
-    XLookupString (e, str, 256, &ks, NULL);
-    ksname = XKeysymToString (ks); /* TBD: Might have to handle no symbol keys */
-    switch (event.type) {
+  if (data->category==XRecordFromServer) {
+    event=(xEvent *)data->data;
+    switch (event->u.u.type) {
       case KeyPress:
+	ks = XKeycodeToKeysym(d0, event->u.u.detail, 0);
+	ksname = XKeysymToString (ks); /* TBD: Might have to handle no symbol keys */
 	if (! process_modifiers(ks, &meta, &ctrl, &shift, 1)) {
 	  display_string = create_emacs_keyname(ksname, meta, ctrl, shift);
-	  
 	  push(keystack, display_string);
 	  display_keystrokes(osd, keystack);
 	}
 	break;
       case KeyRelease:
+	ks = XKeycodeToKeysym(d0, event->u.u.detail, 0);
 	process_modifiers(ks, &meta, &ctrl, &shift, 0);
 	break;
     }
-    
-    
   }
 }
 
+
 int
-main(int argc, char **argv) 
+main()
 {
-  Window window;
-  Display *display;
+  XRecordContext xrd;
+  XRecordRange *range;
+  XRecordClientSpec client;
 
-  parse_args(argc, argv, &window);
+  xosd *osd  = configure_osd(NKEYS);
+  
+  d0 = XOpenDisplay(NULL);
+  d1 = XOpenDisplay(NULL);
 
-  display = XOpenDisplay(NULL);
-  if (display == NULL) {
+  XSynchronize(d0, True);
+  if (d0 == NULL || d1 == NULL) {
     fprintf(stderr, "Cannot connect to X server");
     exit (-1);
   }
 
-  XSetInputFocus(display, window, RevertToParent, CurrentTime);
-  poll_inputs(display, window);
+  client=XRecordAllClients;
 
-  XCloseDisplay(display);
+  range=XRecordAllocRange();
+  memset(range, 0, sizeof(XRecordRange));
+  range->device_events.first=KeyPress;
+  range->device_events.last=KeyRelease;
+
+  xrd = XRecordCreateContext(d0, 0, &client, 1, &range, 1);
+
+  if (! xrd) {
+    fprintf(stderr, "Error in creating context");
+    exit (-1);
+  }
+
+  XRecordEnableContext(d1, xrd, update_key_ring, (XPointer)osd);
+
+  XRecordProcessReplies (d1);
+
+
+  XRecordDisableContext (d0, xrd);
+  XRecordFreeContext (d0, xrd);
+
+
+  XCloseDisplay(d0);
+  XCloseDisplay(d1);
   exit(0);
 }

@@ -1,5 +1,5 @@
 showkeys: showkeys.c showkeys.h keystack.o
-	gcc -g -Wall showkeys.c keystack.o -o showkeys -lX11 -lxosd -lpthread -lXext -lX11 -lXinerama
+	gcc -g -Wall showkeys.c keystack.o -o showkeys -lX11 -lxosd -lpthread -lXext -lX11 -lXinerama -lXtst
 
 
 keystack.o: keystack.c keystack.h
