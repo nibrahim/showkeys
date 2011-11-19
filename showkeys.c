@@ -1,3 +1,12 @@
+/* Showkeys 
+   Copyright Noufal Ibrahim <noufal@nibrahim.net.in> 2011
+
+   Licensed under the GPLv3 : http://www.gnu.org/licenses/gpl.txt
+
+   Please see LICENSE file for complete license.
+*/
+
+
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>

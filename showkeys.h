@@ -1,9 +1,10 @@
-#include <X11/Xlib.h>
+/* Showkeys 
+   Copyright Noufal Ibrahim <noufal@nibrahim.net.in> 2011
 
-#include <xosd.h>
+   Licensed under the GPLv3 : http://www.gnu.org/licenses/gpl.txt
 
-void parse_args(int, char **, Window *);
-void usage();
+   Please see LICENSE file for complete license.
+*/
 void update_key_ring (XPointer priv, XRecordInterceptData *data);
 char *create_emacs_keyname(char *, int, int, int);
 int process_modifiers(KeySym , int * , int *, int *, int);
