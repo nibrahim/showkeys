@@ -13,7 +13,8 @@
 #include "keystack.h"
 
 Display *d0, *d1;
-
+KeyStack *keystack;
+xosd *osd;
 
 
 int 
@@ -45,7 +46,9 @@ create_emacs_keyname(char *keyname, int meta, int ctrl, int shift)
 {
   char *retval;
   /* TBD: Handle <. > and others like that wehere XLookupString gives the right values */
+  printf("%d %d %d ", meta, ctrl, shift);
   asprintf(&retval, "%s%s%s%s", ctrl?"C-":"", meta?"M-":"", shift?"S-":"", keyname);
+  printf(" %s\n",retval);
   return retval;
 }
 
@@ -58,7 +61,7 @@ configure_osd(int lines)
   xosd_set_pos(osd, XOSD_top);
   xosd_set_align(osd, XOSD_right);
 
-  xosd_set_colour(osd, "green");
+  xosd_set_colour(osd, "red");
   xosd_set_outline_colour(osd, "black");
   xosd_set_outline_offset(osd, 2);
   xosd_set_shadow_colour(osd, "grey");
@@ -86,18 +89,16 @@ display_keystrokes(xosd *osd, KeyStack *stack)
 void
 update_key_ring (XPointer priv, XRecordInterceptData *data)
 {
-  int meta = 0;
-  int ctrl = 0;
-  int shift = 0;
+  static int meta = 0;
+  static int ctrl = 0;
+  static int shift = 0;
   xEvent *event;
   KeySym ks;
   char *display_string;
   char *ksname;
-  KeyStack *keystack;
-  xosd *osd = (xosd *)priv;
-  keystack = create_keystack(NKEYS);
   if (data->category==XRecordFromServer) {
     event=(xEvent *)data->data;
+    display_keystack(keystack);
     switch (event->u.u.type) {
       case KeyPress:
 	ks = XKeycodeToKeysym(d0, event->u.u.detail, 0);
@@ -124,7 +125,8 @@ main()
   XRecordRange *range;
   XRecordClientSpec client;
 
-  xosd *osd  = configure_osd(NKEYS);
+  osd  = configure_osd(NKEYS);
+  keystack = create_keystack(NKEYS);
   
   d0 = XOpenDisplay(NULL);
   d1 = XOpenDisplay(NULL);
