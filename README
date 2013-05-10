@@ -13,7 +13,7 @@ has more features that showkeys. The advantages of showkeys are
 1. Doesn't use gtk/gnome.
 2. Uses [libxosd](http://sourceforge.net/projects/libxosd/) to display
    keys directly onto the screen.
-3. No floating windows to that always need to be on top. This is very
+3. No floating windows that always need to be on top. This is very
    useful if you're using a tiling WM like Xmonad.
 4. Keystroke history. key-mon has this but doesn't show
    modifiers. showkeys does using and Emacs style key notation.
