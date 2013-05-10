@@ -30,7 +30,8 @@ You will need
 
 1. The Xlib development libraries. (available as `libx11-dev` on Debian). 
 2. The libxosd development libraries (available as `libxosd-dev` on Debian).
-3. Your X server should have the [record](http://www.x.org/releases/X11R7.6/doc/libXtst/recordlib.html) extension enabled.
+3. The libXtst development libraries (available as `libxtst-dev` on Debian).
+4. Your X server should have the [record](http://www.x.org/releases/X11R7.6/doc/libXtst/recordlib.html) extension enabled. You can check if this is enabled by running `xdpyinfo` and searching the list of extensions for `RECORD`. The command itself is part of the `x11-utils` package (alteast on Debian which I run).
 
 Compiling
 ---------
