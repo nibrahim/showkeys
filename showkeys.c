@@ -20,6 +20,7 @@
 
 #include "showkeys.h"
 #include "keystack.h"
+#include "config.h"
 
 Display *d0, *d1;
 KeyStack *keystack;
@@ -66,17 +67,17 @@ configure_osd(int lines)
 {
   xosd *osd;
   osd = xosd_create (NKEYS);
-  xosd_set_font(osd, "-adobe-courier-bold-r-normal--34-240-100-100-m-200-iso8859-1");
-  xosd_set_pos(osd, XOSD_top);
-  xosd_set_align(osd, XOSD_right);
 
-  xosd_set_colour(osd, "red");
-  xosd_set_outline_colour(osd, "black");
-  xosd_set_outline_offset(osd, 2);
-  xosd_set_shadow_colour(osd, "grey");
-  xosd_set_shadow_offset(osd, 3);
+  xosd_set_font(osd, SK_FONT);
+  xosd_set_pos(osd, SK_POS);
+  xosd_set_align(osd, SK_ALIGN);
+  xosd_set_colour(osd, SK_FG);
+  xosd_set_outline_colour(osd, SK_OUTLINE);
+  xosd_set_outline_offset(osd, SK_OFFSET);
+  xosd_set_shadow_colour(osd, SK_SHADOW);
+  xosd_set_shadow_offset(osd, SK_SHOFFSET);
+  xosd_set_timeout(osd, SK_TIMEOUT);
 
-  xosd_set_timeout(osd, -1);
   return osd;
 }
 

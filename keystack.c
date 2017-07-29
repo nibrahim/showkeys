@@ -54,10 +54,12 @@ push(KeyStack *stack, char *keyname)
   last_key = last->keyname;
   index = stack->pos + 1;
 
+#ifdef SK_NO_REPEATS
   if (index && ! strcmp (last_key, keyname)) {
     /* If the same as the top of the stack, increment count */
     last->times ++;
   } else {
+#endif
     /* Add a new entry */
     if (index == stack->size) {
       push_back(stack, stack->pos);
@@ -66,7 +68,9 @@ push(KeyStack *stack, char *keyname)
     stack->keystrokes[index].keyname = keyname;
     stack->keystrokes[index].times = 1;
     stack->pos = index;
+#ifdef SK_NO_REPEATS
   }
+#endif
 }
 
 
