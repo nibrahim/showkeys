@@ -36,8 +36,9 @@ You will need
 Compiling
 ---------
 
-1. Unzip the tarball
-2. Run `make showkeys`. It should create the executable. 
+1. Unzip the tarball.
+2. Edit the file `config.h` configure showkeys.
+3. Run `make showkeys`. It should create the executable. 
 
 This program uses some [Gnu extensions to libc](http://www.crasseux.com/books/ctutorial/asprintf.html) so might not work with a pure POSIX libc.
 
