@@ -56,9 +56,9 @@ create_emacs_keyname(char *keyname, int meta, int ctrl, int shift)
 {
   char *retval;
   /* TBD: Handle <. > and others like that wehere XLookupString gives the right values */
-  printf("%d %d %d ", meta, ctrl, shift);
+  /* printf("%d %d %d ", meta, ctrl, shift); */
   asprintf(&retval, "%s%s%s%s", ctrl?"C-":"", meta?"M-":"", shift?"S-":"", keyname);
-  printf(" %s\n",retval);
+  /* printf(" %s\n",retval); */
   return retval;
 }
 
@@ -108,7 +108,7 @@ update_key_ring (XPointer priv, XRecordInterceptData *data)
   char *ksname;
   if (data->category==XRecordFromServer) {
     event=(xEvent *)data->data;
-    display_keystack(keystack);
+    /* display_keystack(keystack); */
     switch (event->u.u.type) {
       case KeyPress:
 	ks = XKeycodeToKeysym(d0, event->u.u.detail, 0);
