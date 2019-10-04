@@ -8,7 +8,7 @@ It is useful while making presentations and screencasts. The audience
 will be able to see the keys being pressed.
 
 It is similar to [key-mon](http://code.google.com/p/key-mon/). Key-mon
-has more features that showkeys. The advantages of showkeys are
+has more features than showkeys. The advantages of showkeys are
 
 1. Doesn't use gtk/gnome.
 2. Uses [libxosd](http://sourceforge.net/projects/libxosd/) to display
@@ -16,7 +16,7 @@ has more features that showkeys. The advantages of showkeys are
 3. No floating windows that always need to be on top. This is very
    useful if you're using a tiling WM like Xmonad.
 4. Keystroke history. key-mon has this but doesn't show
-   modifiers. showkeys does using and Emacs style key notation.
+   modifiers. showkeys does this using an Emacs style key notation.
 
 The list of things which key-mon does better than showkeys is far
 longer but I wanted something that fixed these specific issues.
