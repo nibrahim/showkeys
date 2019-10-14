@@ -1,8 +1,8 @@
-showkeys: showkeys.c showkeys.h keystack.o
+showkeys: showkeys.c showkeys.h keystack.o config.h
 	gcc -g -Wall showkeys.c keystack.o -o showkeys -lX11 -lxosd -lpthread -lXext -lX11 -lXinerama -lXtst
 
 
-keystack.o: keystack.c keystack.h
+keystack.o: keystack.c keystack.h config.h
 	gcc -c -g keystack.c
 
 clean:
