@@ -12,6 +12,7 @@
 #include <string.h>
 
 #include "keystack.h"
+#include "config.h"
 
 static void
 push_back(KeyStack *stack, int index)
