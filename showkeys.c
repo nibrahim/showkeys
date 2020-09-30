@@ -35,28 +35,27 @@ die(void)
     exit(1);
 }
 
-int 
-process_modifiers(KeySym ks, int * meta, int *ctrl, int *shift, int val)
+// process_modifiers writes val into *meta, *ctrl and *shift depending
+// on whether the KeySym points to an Alt, Control or Shift key respectively.
+//
+// The function return 1 if ks is a modifier, 0 otherwise.
+int
+process_modifiers(KeySym ks, int *meta, int *ctrl, int *shift, int val)
 {
-  int modifier_pressed = 0;
   switch(ks) {
-    case XK_Shift_L:
-    case XK_Shift_R:
+    case XK_Shift_L: case XK_Shift_R:
       *shift = val;
-      modifier_pressed = 1;
-      break;
-    case XK_Control_L:
-    case XK_Control_R:
+      return 1;
+
+    case XK_Control_L: case XK_Control_R:
       *ctrl = val;
-      modifier_pressed = 1;
-      break;
-    case XK_Alt_L:
-    case XK_Alt_R:
+      return 1;
+
+    case XK_Alt_L: case XK_Alt_R:
       *meta = val;       /* This is not accurate but it's correct for my keyboard mappings */
-      modifier_pressed = 1;
-      break;
+      return 1;
   }
-  return modifier_pressed;
+  return 0;
 }
 
 char *
