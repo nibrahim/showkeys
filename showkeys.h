@@ -33,7 +33,7 @@ typedef struct {
     KeyStack *stack;
 } record_state;
 
-void update_key_ring (XPointer priv, XRecordInterceptData *data);
+void record_callback(XPointer priv, XRecordInterceptData *data);
 char *create_emacs_keyname(record_state*, const char *);
 int process_modifiers(record_state *, KeySym, int);
 xosd *configure_osd(int);

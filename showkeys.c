@@ -99,8 +99,10 @@ display_keystrokes(xosd *osd, KeyStack *stack)
   }
 }
 
+// record_callback processes a key press/release event, as
+// reported by the X record extension.
 void
-update_key_ring(XPointer priv, XRecordInterceptData *data)
+record_callback(XPointer priv, XRecordInterceptData *data)
 {
     record_state *s = (record_state*)priv;
 
@@ -114,12 +116,16 @@ update_key_ring(XPointer priv, XRecordInterceptData *data)
     case KeyPress:
     {
 	KeySym ks = XKeycodeToKeysym(s->disp, event->u.u.detail, 0);
-	if (! process_modifiers(s, ks, 1)) {
-	    const char *ksname = XKeysymToString (ks); /* TBD: Might have to handle no symbol keys */
-	    char *display_string = create_emacs_keyname(s, ksname);
-	    push(s->stack, display_string);
-	    display_keystrokes(s->osd, s->stack);
-	}
+	int isModifier = process_modifiers(s, ks, 1);
+	if (isModifier)
+	    // Only a modifier: don't report the key press just yet.
+	    break;
+
+	// The non-modifier part of a combo has been pressed. Report that.
+	const char *ksname = XKeysymToString(ks); /* TBD: Might have to handle no symbol keys */
+	char *display_string = create_emacs_keyname(s, ksname);
+	push(s->stack, display_string);
+	display_keystrokes(s->osd, s->stack);
 	break;
     }
     case KeyRelease:
@@ -184,7 +190,7 @@ main(void)
   if (!xrd)
       die("XRecordCreateContext");
 
-  XRecordEnableContext(d1, xrd, update_key_ring, (XPointer)&s);
+  XRecordEnableContext(d1, xrd, record_callback, (XPointer)&s);
 
   // Main loop.
   XRecordProcessReplies(d1);
