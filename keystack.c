@@ -19,8 +19,9 @@ push_back(KeyStack *stack, int index)
 {
   int i;
   free(stack->keystrokes[0].keyname);
-  for (i=0; i<index; i++) 
+  for (i=0; i<index; i++)
     stack->keystrokes[i] = stack->keystrokes[i+1];
+  stack->keystrokes[index].keyname = 0;
 }
 
 KeyStack *
