@@ -22,6 +22,7 @@ static void
 push_back(KeyStack *stack, int index)
 {
     free(stack->keystrokes[0].keyname);
+    free(stack->keystrokes[0].buf);
 
     for (int i = 0; i < index; i++)
 	stack->keystrokes[i] = stack->keystrokes[i+1];
@@ -61,19 +62,20 @@ push(KeyStack *stack, char *keyname)
   int index = stack->pos + 1;
 
 #ifdef SK_NO_REPEATS
-  if (index && !strcmp(stack->keystrokes[index-1].keyname, keyname)) {
+  if (index >= 1 && !strcmp(stack->keystrokes[index-1].keyname, keyname)) {
       /* If the same as the top of the stack, increment count */
       stack->keystrokes[index-1].times++;
   } else {
 #endif
-    /* Add a new entry */
-    if (index == stack->size) {
-      push_back(stack, stack->pos);
-      index = stack->size-1;
-    }
-    stack->keystrokes[index].keyname = keyname;
-    stack->keystrokes[index].times = 1;
-    stack->pos = index;
+      /* Add a new entry. */
+      if (index == stack->size) {
+	  push_back(stack, stack->pos);
+	  index = stack->size - 1;
+      }
+      stack->keystrokes[index].buf = strdup(keyname);
+      stack->keystrokes[index].keyname = keyname;
+      stack->keystrokes[index].times = 1;
+      stack->pos = index;
 #ifdef SK_NO_REPEATS
   }
 #endif

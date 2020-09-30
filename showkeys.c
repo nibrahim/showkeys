@@ -87,15 +87,17 @@ configure_osd(int lines)
 void
 display_keystrokes(xosd *osd, KeyStack *stack)
 {
-  int i;
-  for(i = 0; i < NKEYS; i++) {
-    if (stack->keystrokes[i].keyname) {
-      if (stack->keystrokes[i].times == 1) {
-	xosd_display(osd, i, XOSD_printf, "%s", stack->keystrokes[i].keyname);
-      } else {
-	xosd_display(osd, i, XOSD_printf, "%s (x%d)", stack->keystrokes[i].keyname, stack->keystrokes[i].times);
+  for(int i = 0; i <= stack->pos; i++) {
+      const char *outputstr = stack->keystrokes[i].buf;
+      if (!outputstr) {
+	  outputstr = "";
       }
-    }
+
+      if (stack->keystrokes[i].times == 1) {
+	  xosd_display(osd, i, XOSD_printf, "%s", outputstr);
+      } else {
+	  xosd_display(osd, i, XOSD_printf, "%s (x%d)", outputstr, stack->keystrokes[i].times);
+      }
   }
 }
 
