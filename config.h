@@ -7,6 +7,9 @@
 /* Number of OSD lines on the screen */
 #define NKEYS 10
 
+/* Maximum length of one OSD line */
+#define OSDLEN 15
+
 /* Display font, select a font using 'xfontsel -scaled' */
 #define SK_FONT     "-*-latin modern sans-*-r-*-*-60-*-*-*-*-*-*-*"
 
@@ -40,6 +43,10 @@
    If you want to display each key press separately, change this
    to: #undef SK_NO_REPEATS. */
 #define SK_NO_REPEATS
+
+/* Define CAPS_IS_CONTROL if the caps lock key should be understood as a control
+ * modifier. */
+#define CAPS_IS_CONTROL
 
 
 #endif

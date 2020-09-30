@@ -6,6 +6,7 @@
    Please see LICENSE file for complete license.
 */
 
+#define _GNU_SOURCE
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,6 +29,17 @@ push_back(KeyStack *stack, int index)
 	stack->keystrokes[i] = stack->keystrokes[i+1];
 
     stack->keystrokes[index].keyname = 0;
+}
+
+void
+clear_stack(KeyStack *stack)
+{
+    for (int i = 0; i < stack->pos; i++) {
+	free(stack->keystrokes[i].keyname);
+	free(stack->keystrokes[i].buf);
+	stack->keystrokes[i].keyname = 0;
+    }
+    stack->pos = -1;
 }
 
 KeyStack *
@@ -68,14 +80,32 @@ push(KeyStack *stack, char *keyname)
   } else {
 #endif
       /* Add a new entry. */
-      if (index == stack->size) {
-	  push_back(stack, stack->pos);
-	  index = stack->size - 1;
+      // Can we add it to the previous line?
+      if (index >= 1 && // We have a previous line already.
+	  stack->keystrokes[index-1].times < 2 && // Not more than one press of the last key.
+	  strcmp(stack->keystrokes[index-1].keyname, "Ret") != 0 && // Only if the last key was not "Enter".
+	  strlen(stack->keystrokes[index-1].buf) + strlen(keyname) + 1 < OSDLEN // The combination fits.
+	  ) {
+	  char *newbuf;
+	  if (-1 == asprintf(&newbuf, "%s %s", stack->keystrokes[index-1].buf, keyname))
+	      die("asprintf");
+	  free(stack->keystrokes[index-1].keyname);
+	  free(stack->keystrokes[index-1].buf);
+	  stack->keystrokes[index-1].buf = newbuf;
+	  stack->keystrokes[index-1].keyname = keyname;
+      } else {
+	  // Adding to the last line? scroll everything first up.
+	  if (index == stack->size) {
+	      push_back(stack, stack->pos);
+	      index = stack->size - 1;
+	  }
+
+	  // Now create a new line.
+	  stack->keystrokes[index].buf = strdup(keyname);
+	  stack->keystrokes[index].keyname = keyname;
+	  stack->keystrokes[index].times = 1;
+	  stack->pos = index;
       }
-      stack->keystrokes[index].buf = strdup(keyname);
-      stack->keystrokes[index].keyname = keyname;
-      stack->keystrokes[index].times = 1;
-      stack->pos = index;
 #ifdef SK_NO_REPEATS
   }
 #endif

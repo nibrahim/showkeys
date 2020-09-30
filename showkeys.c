@@ -6,6 +6,7 @@
    Please see LICENSE file for complete license.
 */
 
+#include <xosd.h>
 #define _GNU_SOURCE
 
 #include "config.h"
@@ -36,6 +37,9 @@ process_modifiers(record_state *s, KeySym ks, int val)
 	s->shift = val;
 	return 1;
 
+#ifdef CAPS_IS_CONTROL
+    case XK_Caps_Lock:
+#endif
     case XK_Control_L: case XK_Control_R:
 	s->ctrl = val;
 	return 1;
@@ -53,10 +57,53 @@ create_emacs_keyname(record_state *s, const char *keyname)
   char *retval;
   /* TBD: Handle <. > and others like that where XLookupString gives the right values */
   /* printf("%d %d %d ", meta, ctrl, shift); */
+  // Some special cases:
+  if (!strcmp(keyname, "space")) keyname = "Sp";
+  else if (!strcmp(keyname, "Return")) keyname = "Ret";
+  else if (!strcmp(keyname, "apostrophe")) keyname = "'";
+  else if (!strcmp(keyname, "grave")) keyname = "`";
+  else if (!strcmp(keyname, "comma")) keyname = ",";
+  else if (!strcmp(keyname, "minus")) keyname = "-";
+  else if (!strcmp(keyname, "slash")) keyname = "/";
+  else if (!strcmp(keyname, "backslash")) keyname = "\\";
+  else if (!strcmp(keyname, "period")) keyname = ".";
+  else if (!strcmp(keyname, "equal")) keyname = "=";
+  else if (!strcmp(keyname, "semicolon")) keyname = ";";
+  else if (!strcmp(keyname, "bracketleft")) keyname = "[";
+  else if (!strcmp(keyname, "bracketright")) keyname = "]";
+  else if (!strcmp(keyname, "BackSpace")) keyname = "Bksp";
+
+  int shift = s->shift;
+  if (shift) {
+      const char *oldkey = keyname;
+      if (!strcmp(keyname, "semicolon")) keyname = (":");
+      else if (strlen(keyname) == 1) {
+	  static const char *punct = ")\0!\0@\0#\0$\0%\0^\0&\0*\0(";
+	  static const char *alph = "A\0B\0C\0D\0E\0F\0G\0H\0I\0J\0K\0L\0M\0N\0O\0P\0Q\0R\0S\0T\0U\0V\0W\0X\0Y\0Z";
+	  if ('0' <= keyname[0] && keyname[0] <= '9')
+	      keyname = punct + (keyname[0] - '0') * 2;
+	  else if ('a' <= keyname[0] && keyname[0] <= 'z')
+	      keyname = alph + (keyname[0] - 'a') * 2;
+	  else if (keyname[0] == '-') keyname = ("_");
+	  else if (keyname[0] == '=') keyname = ("+");
+	  else if (keyname[0] == '[') keyname = ("{");
+	  else if (keyname[0] == ']') keyname = ("}");
+	  else if (keyname[0] == '\'') keyname = ("\"");
+	  else if (keyname[0] == ',') keyname = ("<");
+	  else if (keyname[0] == '`') keyname = ("~");
+	  else if (keyname[0] == '.') keyname = (">");
+	  else if (keyname[0] == '/') keyname = ("?");
+	  else if (keyname[0] == '\\') keyname = ("|");
+      }
+      if (oldkey != keyname) {
+	  shift = 0;
+      }
+  }
+  
   if (-1 == asprintf(&retval, "%s%s%s%s",
 		     s->ctrl ? "C-" : "",
 		     s->meta ? "M-" : "",
-		     s->shift ? "S-" : "",
+		     shift ? "S-" : "",
 		     keyname)) {
       die("asprintf");
   }
@@ -99,6 +146,9 @@ display_keystrokes(xosd *osd, KeyStack *stack)
 	  xosd_display(osd, i, XOSD_printf, "%s (x%d)", outputstr, stack->keystrokes[i].times);
       }
   }
+  for (int i = stack->pos + 1; i < stack->size; i++) {
+      xosd_display(osd, i, XOSD_string, "");
+  }
 }
 
 // record_callback processes a key press/release event, as
@@ -123,6 +173,11 @@ record_callback(XPointer priv, XRecordInterceptData *data)
 	    // Only a modifier: don't report the key press just yet.
 	    break;
 
+	if (!xosd_is_onscreen(s->osd)) {
+	    // Not currently displayed. Start from scratch.
+	    clear_stack(s->stack);
+	}
+	
 	// The non-modifier part of a combo has been pressed. Report that.
 	const char *ksname = XKeysymToString(ks); /* TBD: Might have to handle no symbol keys */
 	char *display_string = create_emacs_keyname(s, ksname);

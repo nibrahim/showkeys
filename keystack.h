@@ -40,6 +40,7 @@ typedef struct {
 
 KeyStack *create_keystack();
 void push(KeyStack *, char *);
+void clear_stack(KeyStack *);
 void display_keystack(KeyStack *);
 
 #endif
