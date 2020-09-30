@@ -93,7 +93,7 @@ display_keystrokes(xosd *osd, KeyStack *stack)
       if (stack->keystrokes[i].times == 1) {
 	xosd_display(osd, i, XOSD_printf, "%s", stack->keystrokes[i].keyname);
       } else {
-	xosd_display(osd, i, XOSD_printf, "%s %d times", stack->keystrokes[i].keyname, stack->keystrokes[i].times);
+	xosd_display(osd, i, XOSD_printf, "%s (x%d)", stack->keystrokes[i].keyname, stack->keystrokes[i].times);
       }
     }
   }
