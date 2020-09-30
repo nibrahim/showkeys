@@ -79,7 +79,7 @@ xosd *
 configure_osd(int lines)
 {
   xosd *osd;
-  osd = xosd_create (NKEYS);
+  osd = xosd_create(lines);
 
   xosd_set_font(osd, SK_FONT);
   xosd_set_pos(osd, SK_POS);
