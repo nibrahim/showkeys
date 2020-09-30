@@ -10,8 +10,10 @@ all: showkeys
 clean:
 	rm -f showkeys *.o
 
-.c.o: $(HEADERS)
+.c.o:
 	$(CC) $(CFLAGS) -c -o $@ $<
+
+$(SOURCES:.c=.o): $(HEADERS)
 
 showkeys: $(SOURCES:.c=.o)
 	$(LD) -o $@ $^ $(LDFLAGS)
