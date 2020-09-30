@@ -11,7 +11,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <X11/Xlib.h> 
+#include <errno.h>
+
+#include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xproto.h>
 #include <X11/extensions/record.h>
@@ -26,6 +28,12 @@ Display *d0, *d1;
 KeyStack *keystack;
 xosd *osd;
 
+void
+die(void)
+{
+    fprintf(stderr, "error: %s\n", strerror(errno));
+    exit(1);
+}
 
 int 
 process_modifiers(KeySym ks, int * meta, int *ctrl, int *shift, int val)
@@ -51,13 +59,19 @@ process_modifiers(KeySym ks, int * meta, int *ctrl, int *shift, int val)
   return modifier_pressed;
 }
 
-char * 
+char *
 create_emacs_keyname(char *keyname, int meta, int ctrl, int shift)
 {
   char *retval;
-  /* TBD: Handle <. > and others like that wehere XLookupString gives the right values */
+  /* TBD: Handle <. > and others like that where XLookupString gives the right values */
   /* printf("%d %d %d ", meta, ctrl, shift); */
-  asprintf(&retval, "%s%s%s%s", ctrl?"C-":"", meta?"M-":"", shift?"S-":"", keyname);
+  if (-1 == asprintf(&retval, "%s%s%s%s",
+		     ctrl ? "C-" : "",
+		     meta ? "M-" : "",
+		     shift ? "S-" : "",
+		     keyname)) {
+      die();
+  }
   /* printf(" %s\n",retval); */
   return retval;
 }
