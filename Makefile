@@ -1,6 +1,6 @@
 LDFLAGS = -lX11 -lxosd -lpthread -lXext -lX11 -lXinerama -lXtst
 SOURCES = keystack.c showkeys.c
-HEADERS = config.h keystack.h showkeys.h
+HEADERS = config.h keystack.h showkeys.h die.h
 CC = gcc
 CFLAGS = -g -Wall -Wextra -fdiagnostics-color=auto
 LD = gcc

@@ -1,4 +1,4 @@
-/* Showkeys 
+/* Showkeys
    Copyright Noufal Ibrahim <noufal@nibrahim.net.in> 2011
 
    Licensed under the GPLv3 : http://www.gnu.org/licenses/gpl.txt
@@ -12,52 +12,58 @@
 #include <string.h>
 
 #include "keystack.h"
+#include "die.h"
 #include "config.h"
 
+// push_back frees up the spot in the stack at the specified index,
+// by pulling all the entries before that by one spot.
+// The first entry is popped (and its string deallocated).
 static void
 push_back(KeyStack *stack, int index)
 {
-  int i;
-  free(stack->keystrokes[0].keyname);
-  for (i=0; i<index; i++)
-    stack->keystrokes[i] = stack->keystrokes[i+1];
-  stack->keystrokes[index].keyname = 0;
+    free(stack->keystrokes[0].keyname);
+
+    for (int i = 0; i < index; i++)
+	stack->keystrokes[i] = stack->keystrokes[i+1];
+
+    stack->keystrokes[index].keyname = 0;
 }
 
 KeyStack *
-create_keystack(int size) 
+create_keystack(int size)
 {
-  int i;
-  KeyStack *retval = NULL;
-  KeyStroke *stack = NULL;
+    KeyStack *retval = NULL;
+    KeyStroke *stack = NULL;
 
-  stack = (KeyStroke *)malloc(sizeof(KeyStroke) * size);
-  for (i=0; i<size; i++) {
-    stack[i].keyname = NULL;
-    stack[i].times = 0;
-  }
+    stack = (KeyStroke *)malloc(sizeof(KeyStroke) * size);
+    if (!stack)
+	die("malloc");
 
-  retval = (KeyStack *)malloc(sizeof(KeyStack));
-  retval->size = size;
-  retval->pos = -1;
-  retval->keystrokes = stack;
+    for (int i = 0; i < size; i++) {
+	stack[i].keyname = NULL;
+	stack[i].times = 0;
+    }
 
-  return retval;
+    retval = (KeyStack *)malloc(sizeof(KeyStack));
+    if (!retval)
+	die("malloc");
+
+    retval->size = size;
+    retval->pos = -1;
+    retval->keystrokes = stack;
+
+    return retval;
 }
 
 void
 push(KeyStack *stack, char *keyname)
 {
-  int index;
-  KeyStroke *last;
-  char *last_key;
-
-  index = stack->pos + 1;
+  int index = stack->pos + 1;
 
 #ifdef SK_NO_REPEATS
-  if (index && ! strcmp (stack->keystrokes[index-1].keyname, keyname)) {
-    /* If the same as the top of the stack, increment count */
-    stack->keystrokes[index-1].times ++;
+  if (index && !strcmp(stack->keystrokes[index-1].keyname, keyname)) {
+      /* If the same as the top of the stack, increment count */
+      stack->keystrokes[index-1].times++;
   } else {
 #endif
     /* Add a new entry */
@@ -77,9 +83,8 @@ push(KeyStack *stack, char *keyname)
 void
 display_keystack(KeyStack *stack)
 {
-  int i;
   printf("---- Keystack ----\n");
-  for (i = 0; i <= stack->pos; i++) {
+  for (int i = 0; i <= stack->pos; i++) {
     printf("%s %d times\n", stack->keystrokes[i].keyname, stack->keystrokes[i].times);
   }
   printf("---- -------- ----\n\n");
