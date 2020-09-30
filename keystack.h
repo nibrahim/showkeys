@@ -9,7 +9,7 @@
 #ifndef KEYSTACK_H
 #define KEYSTACK_H
 
-#define NKEYS 10
+#include "config.h"
 
 // KeyStroke represents one line in the OSD output.
 typedef struct {

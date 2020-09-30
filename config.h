@@ -1,9 +1,14 @@
 /*
   Config header for showkeys.c
 */
+#ifndef CONFIG_H
+#define CONFIG_H
+
+/* Number of OSD lines on the screen */
+#define NKEYS 10
 
 /* Display font, select a font using 'xfontsel -scaled' */
-#define SK_FONT     "-*-courier*-*-*-*-*-60-*-*-*-*-*-*-*"
+#define SK_FONT     "-*-latin modern sans-*-r-*-*-60-*-*-*-*-*-*-*"
 
 /* Display position, possible values: XOSD_top, XOSD_bottom */
 #define SK_POS      XOSD_bottom
@@ -36,3 +41,5 @@
    to: #undef SK_NO_REPEATS. */
 #define SK_NO_REPEATS
 
+
+#endif
