@@ -190,7 +190,8 @@ main(void)
   if (!xrd)
       die("XRecordCreateContext");
 
-  XRecordEnableContext(d1, xrd, record_callback, (XPointer)&s);
+  if (!XRecordEnableContext(d1, xrd, record_callback, (XPointer)&s))
+      die("XRecordEnableContext");
 
   // Main loop.
   XRecordProcessReplies(d1);
