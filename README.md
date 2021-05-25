@@ -1,7 +1,6 @@
 Showkeys
 --------
 
-
 Showkeys is a simple program to display keys being pressed on the screen. 
 
 It is useful while making presentations and screencasts. The audience
@@ -45,6 +44,11 @@ This program uses some [Gnu extensions to libc](http://www.crasseux.com/books/ct
 Bugs
 ----
 
-The project is on Github. Please report bugs using the issue tracker.
+The project is on Github. Please report bugs using the github issue tracker.
+
+Contact
+-------
+
+You can find me @noufalibrahim on Twitter.
 
 
